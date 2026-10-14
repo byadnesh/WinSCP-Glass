@@ -1,18 +1,30 @@
 <div align="center">
 
-<img src="docs/assets/logo.png" alt="WinSCP Glass" width="96" />
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:6F8DFF,50:8E7BFF,100:A16BFF&height=210&section=header&text=WinSCP%20Glass&fontSize=58&fontColor=FFFFFF&fontAlignY=36&animation=fadeIn&desc=A%20liquid-glass%20file%20transfer%20client%20for%20Windows&descSize=17&descAlignY=58&descAlign=50" alt="WinSCP Glass" width="100%" />
 
-<h1>WinSCP Glass</h1>
+<img src="docs/assets/logo.png" alt="WinSCP Glass logo" width="84" />
 
-<p><strong>A liquid-glass file transfer client for Windows.</strong><br/>
-SFTP, SCP, FTP/FTPS, WebDAV and Amazon S3 in a translucent, modern interface. Inspired by WinSCP.</p>
+<br/><br/>
+
+<a href="https://github.com/byadnesh/WinSCP-Glass">
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=500&size=21&duration=3000&pause=1000&color=8E9BFF&center=true&vCenter=true&width=640&lines=SFTP+%C2%B7+SCP+%C2%B7+FTP%2FFTPS+%C2%B7+WebDAV+%C2%B7+Amazon+S3;Translucent+glass+interface+inspired+by+visionOS;Drag+and+drop+transfers+with+a+live+queue;Built+with+C%23%2C+WPF+and+.NET+9;Inspired+by+WinSCP" alt="Animated summary of WinSCP Glass" />
+</a>
+
+<br/><br/>
 
 <p>
-  <img src="https://img.shields.io/badge/.NET-9.0-512BD4?style=flat-square&logo=dotnet&logoColor=white" alt=".NET 9" />
-  <img src="https://img.shields.io/badge/UI-WPF-5C2D91?style=flat-square" alt="WPF" />
-  <img src="https://img.shields.io/badge/language-C%23-239120?style=flat-square" alt="C#" />
-  <img src="https://img.shields.io/badge/platform-Windows%2010%20%7C%2011-0078D6?style=flat-square" alt="Windows 10 | 11" />
-  <img src="https://img.shields.io/badge/license-MIT-6F8DFF?style=flat-square" alt="MIT License" />
+  <img src="https://img.shields.io/badge/.NET-9.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET 9" />
+  <img src="https://img.shields.io/badge/C%23-WPF-239120?style=for-the-badge" alt="C# and WPF" />
+  <img src="https://img.shields.io/badge/Windows-10%20%7C%2011-0078D6?style=for-the-badge&logo=windows11&logoColor=white" alt="Windows 10 | 11" />
+  <img src="https://img.shields.io/badge/Engine-WinSCP-2E7D32?style=for-the-badge" alt="Powered by the WinSCP engine" />
+</p>
+
+<p>
+  <img src="https://img.shields.io/github/license/byadnesh/WinSCP-Glass?style=flat-square&color=6F8DFF" alt="License" />
+  <img src="https://img.shields.io/github/last-commit/byadnesh/WinSCP-Glass?style=flat-square&color=8E7BFF" alt="Last commit" />
+  <img src="https://img.shields.io/github/repo-size/byadnesh/WinSCP-Glass?style=flat-square&color=A16BFF" alt="Repository size" />
+  <img src="https://img.shields.io/github/stars/byadnesh/WinSCP-Glass?style=flat-square&color=22C3FF" alt="Stars" />
+  <img src="https://img.shields.io/github/issues/byadnesh/WinSCP-Glass?style=flat-square&color=3BE8B0" alt="Open issues" />
 </p>
 
 <p>
@@ -182,6 +194,10 @@ flowchart LR
     ENG --> D["Amazon S3"]
 ```
 
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=cs,dotnet,windows,visualstudio,git,github&theme=dark" alt="C#, .NET, Windows, Visual Studio, Git, GitHub" />
+</p>
+
 | Layer | Technology |
 | --- | --- |
 | Presentation | WPF, with a custom glass design system and no third-party UI framework |
@@ -243,5 +259,9 @@ WinSCP Glass is released under the [MIT License](LICENSE). Builds include `WinSC
 <br/>
 
 <div align="center">
-<sub>Designed and developed by <a href="https://github.com/byadnesh">Yadnesh Bhagwat</a></sub>
+
+<a href="https://github.com/byadnesh"><img src="https://img.shields.io/badge/Designed%20and%20developed%20by-Yadnesh%20Bhagwat-6F8DFF?style=for-the-badge&logo=github&logoColor=white" alt="Designed and developed by Yadnesh Bhagwat" /></a>
+
+<img src="https://capsule-render.vercel.app/api?type=waving&color=0:6F8DFF,50:8E7BFF,100:A16BFF&height=120&section=footer&animation=fadeIn" alt="" width="100%" />
+
 </div>
