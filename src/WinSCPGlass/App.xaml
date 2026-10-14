@@ -1,0 +1,22 @@
+<Application x:Class="WinScpGlass.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:WinScpGlass.Controls"
+             ShutdownMode="OnMainWindowClose">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- Index 0 is swapped at runtime by App.ApplyTheme -->
+                <ResourceDictionary Source="Themes/Dark.xaml" />
+                <ResourceDictionary Source="Styles/Controls.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <ctl:BoolToVisibilityConverter x:Key="BoolToVisible" />
+            <ctl:BoolToVisibilityConverter x:Key="BoolToCollapsed" Invert="True" />
+            <ctl:NullToVisibilityConverter x:Key="ValueToVisible" />
+            <ctl:NullToVisibilityConverter x:Key="ValueToCollapsed" Invert="True" />
+            <ctl:EnumEqualsConverter x:Key="EnumEquals" />
+            <ctl:HueToBrushConverter x:Key="HueToBrush" />
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

@@ -1,0 +1,228 @@
+<UserControl x:Class="WinScpGlass.Views.FilePanelView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ctl="clr-namespace:WinScpGlass.Controls"
+             xmlns:vm="clr-namespace:WinScpGlass.ViewModels"
+             xmlns:m="clr-namespace:WinScpGlass.Models"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance vm:FilePanelViewModel}"
+             AllowDrop="True" DragOver="OnDragOver" DragLeave="OnDragLeave" Drop="OnDrop"
+             PreviewMouseDown="OnAnyMouseDown" PreviewGotKeyboardFocus="OnAnyFocus">
+    <Grid>
+        <ContentControl Style="{StaticResource GlassCard}" Padding="10,14,10,8">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <!-- Header -->
+                <Grid Margin="8,0,2,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Width="38" Height="38">
+                        <Border CornerRadius="13" Background="{DynamicResource GlassFillBrush}" BorderBrush="{DynamicResource GlassBorderBrush}" BorderThickness="1" />
+                        <Border x:Name="HeaderOrbActive" CornerRadius="13" Background="{DynamicResource AccentGradientBrush}" Opacity="0" />
+                        <TextBlock Style="{StaticResource Glyph}" Text="{Binding Glyph}" FontSize="16" HorizontalAlignment="Center" />
+                    </Grid>
+                    <StackPanel Grid.Column="1" Margin="12,0,8,0" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Title}" Style="{StaticResource HeadingText}" FontSize="15.5" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="{Binding Subtitle}" Style="{StaticResource CaptionText}" Margin="0,1,0,0" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Control Style="{StaticResource Spinner}" Width="16" Height="16" Margin="0,0,10,0"
+                                 Visibility="{Binding IsBusy, Converter={StaticResource BoolToVisible}}" />
+                        <Button Style="{StaticResource GhostIconButton}" ctl:UiProps.Icon="&#xE72B;" ToolTip="Back (Alt+Left)"
+                                Command="{Binding GoBackCommand}" IsEnabled="{Binding CanGoBack}" />
+                        <Button Style="{StaticResource GhostIconButton}" ctl:UiProps.Icon="&#xE72A;" ToolTip="Forward (Alt+Right)"
+                                Command="{Binding GoForwardCommand}" IsEnabled="{Binding CanGoForward}" />
+                        <Button Style="{StaticResource GhostIconButton}" ctl:UiProps.Icon="&#xE74A;" ToolTip="Up one level (Backspace)"
+                                Command="{Binding GoUpCommand}" IsEnabled="{Binding CanGoUp}" />
+                        <Button Style="{StaticResource GhostIconButton}" ctl:UiProps.Icon="&#xE72C;" ToolTip="Refresh (F5)"
+                                Command="{Binding RefreshCommand}" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Address bar + filter -->
+                <Grid Grid.Row="1" Margin="2,0,2,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <Border x:Name="CrumbBar" Height="38" CornerRadius="19" Background="{DynamicResource FieldFillBrush}"
+                            BorderBrush="{DynamicResource FieldBorderBrush}" BorderThickness="1" Cursor="IBeam"
+                            MouseLeftButtonUp="CrumbBar_MouseLeftButtonUp"
+                            Visibility="{Binding IsEditingPath, Converter={StaticResource BoolToCollapsed}}">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <ScrollViewer x:Name="CrumbScroller" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled"
+                                          Margin="6,0,0,0" Focusable="False">
+                                <ItemsControl ItemsSource="{Binding Crumbs}" Focusable="False" VerticalAlignment="Center">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate DataType="{x:Type vm:Crumb}">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock x:Name="Sep" Style="{StaticResource Glyph}" Text="&#xE76C;" FontSize="8" Margin="2,1,2,0"
+                                                           Foreground="{DynamicResource TextTertiaryBrush}" />
+                                                <Button Style="{StaticResource GhostButton}" Height="28" Padding="9,0" FontSize="13"
+                                                        ctl:UiProps.CornerRadius="14" Cursor="Hand" Content="{Binding Label}"
+                                                        Command="{Binding DataContext.NavigateCrumbCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}" />
+                                            </StackPanel>
+                                            <DataTemplate.Triggers>
+                                                <DataTrigger Binding="{Binding IsRoot}" Value="True">
+                                                    <Setter TargetName="Sep" Property="Visibility" Value="Collapsed" />
+                                                </DataTrigger>
+                                            </DataTemplate.Triggers>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                            <Button Grid.Column="1" Style="{StaticResource GhostIconButton}" Width="30" Height="30" Margin="0,0,3,0"
+                                    FontSize="12" ctl:UiProps.Icon="&#xE70F;" ToolTip="Type a path (Ctrl+L)"
+                                    Command="{Binding BeginEditPathCommand}" />
+                        </Grid>
+                    </Border>
+
+                    <TextBox x:Name="PathBox" Style="{StaticResource GlassTextBox}" Height="38" ctl:UiProps.CornerRadius="19"
+                             ctl:UiProps.Icon="&#xE8B7;" FontFamily="{StaticResource MonoFont}" FontSize="13"
+                             Text="{Binding PathText, UpdateSourceTrigger=PropertyChanged}"
+                             Visibility="{Binding IsEditingPath, Converter={StaticResource BoolToVisible}}"
+                             IsVisibleChanged="PathBox_IsVisibleChanged" KeyDown="PathBox_KeyDown" LostKeyboardFocus="PathBox_LostKeyboardFocus" />
+
+                    <TextBox x:Name="FilterBox" Grid.Column="1" Width="160" Margin="8,0,0,0" Style="{StaticResource GlassTextBox}"
+                             Height="38" ctl:UiProps.CornerRadius="19" ctl:UiProps.Icon="&#xE71C;" ctl:UiProps.Placeholder="Filter"
+                             FontSize="13" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" KeyDown="FilterBox_KeyDown" />
+                </Grid>
+
+                <!-- Files -->
+                <DataGrid x:Name="FileGrid" Grid.Row="2" Style="{StaticResource GlassGrid}" ItemsSource="{Binding Items}"
+                          KeyboardNavigation.TabNavigation="Once"
+                          Sorting="Grid_Sorting" SelectionChanged="Grid_SelectionChanged" PreviewKeyDown="Grid_PreviewKeyDown"
+                          PreviewMouseLeftButtonDown="Grid_PreviewMouseLeftButtonDown" PreviewMouseLeftButtonUp="Grid_PreviewMouseLeftButtonUp"
+                          PreviewMouseMove="Grid_PreviewMouseMove" PreviewMouseRightButtonDown="Grid_PreviewMouseRightButtonDown">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn x:Name="NameColumn" Header="Name" Width="*" MinWidth="160" SortMemberPath="Name">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate DataType="{x:Type m:FileEntry}">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Image Source="{Binding Icon}" Width="16" Height="16" Margin="0,0,11,0" RenderOptions.BitmapScalingMode="HighQuality" />
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Size" Binding="{Binding SizeText}" Width="92" SortMemberPath="Size">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+                                    <Setter Property="FontSize" Value="12.5" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Modified" Binding="{Binding ModifiedText}" Width="140" SortMemberPath="Modified">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+                                    <Setter Property="FontSize" Value="12.5" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                        <DataGridTextColumn x:Name="DetailColumn" Header="Type" Binding="{Binding Detail}" Width="120" SortMemberPath="Detail">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+                                    <Setter Property="FontSize" Value="12.5" />
+                                    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                    <DataGrid.ContextMenu>
+                        <ContextMenu Opened="ContextMenu_Opened">
+                            <MenuItem x:Name="MenuOpen" Header="Open" ctl:UiProps.Icon="&#xE8E5;" InputGestureText="Enter" Click="MenuOpen_Click" />
+                            <MenuItem x:Name="MenuTransfer" Header="Upload" ctl:UiProps.Icon="&#xE898;" InputGestureText="Ctrl+U" Click="MenuTransfer_Click" />
+                            <Separator />
+                            <MenuItem x:Name="MenuRename" Header="Rename" ctl:UiProps.Icon="&#xE8AC;" InputGestureText="F2" Click="MenuRename_Click" />
+                            <MenuItem x:Name="MenuNewFolder" Header="New folder" ctl:UiProps.Icon="&#xE8F4;" InputGestureText="Ctrl+Shift+N" Click="MenuNewFolder_Click" />
+                            <MenuItem x:Name="MenuCopyPath" Header="Copy path" ctl:UiProps.Icon="&#xE8C8;" Click="MenuCopyPath_Click" />
+                            <Separator />
+                            <MenuItem Header="Refresh" ctl:UiProps.Icon="&#xE72C;" InputGestureText="F5" Click="MenuRefresh_Click" />
+                            <MenuItem x:Name="MenuDelete" Header="Delete" ctl:UiProps.Icon="&#xE74D;" InputGestureText="Del"
+                                      Style="{StaticResource DangerMenuItem}" Click="MenuDelete_Click" />
+                        </ContextMenu>
+                    </DataGrid.ContextMenu>
+                </DataGrid>
+
+                <!-- Empty folder -->
+                <StackPanel Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False" Margin="0,0,0,40">
+                    <StackPanel.Style>
+                        <Style TargetType="StackPanel">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        <Condition Binding="{Binding IsEmpty}" Value="True" />
+                                        <Condition Binding="{Binding IsBusy}" Value="False" />
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </MultiDataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </StackPanel.Style>
+                    <Grid Width="60" Height="60">
+                        <Ellipse Fill="{DynamicResource GlassFillBrush}" Stroke="{DynamicResource GlassBorderBrush}" />
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE838;" FontSize="22" HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </Grid>
+                    <TextBlock Text="Nothing here" Margin="0,14,0,0" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <TextBlock Text="Drop files here to copy them into this folder" Style="{StaticResource CaptionText}"
+                               HorizontalAlignment="Center" Margin="0,4,0,0" />
+                </StackPanel>
+
+                <!-- Status -->
+                <TextBlock Grid.Row="3" Text="{Binding StatusText}" Style="{StaticResource CaptionText}" Margin="12,8,12,2" />
+            </Grid>
+        </ContentControl>
+
+        <!-- Active panel rim light -->
+        <Border x:Name="ActiveRim" CornerRadius="24" BorderThickness="1.5" BorderBrush="{DynamicResource AccentBrush}"
+                IsHitTestVisible="False" Opacity="0">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="24" ShadowDepth="0" Opacity="0.55" Color="#7C8CFF" />
+            </Border.Effect>
+        </Border>
+
+        <!-- Drop target -->
+        <Border CornerRadius="24" IsHitTestVisible="False"
+                Visibility="{Binding IsDropTarget, Converter={StaticResource BoolToVisible}}">
+            <Border.Background>
+                <SolidColorBrush Color="{DynamicResource AccentColor}" Opacity="0.16" />
+            </Border.Background>
+            <Border BorderBrush="{DynamicResource AccentBrush}" BorderThickness="2" CornerRadius="24" Margin="0">
+                <Border CornerRadius="22" Padding="22,14" Background="{DynamicResource MenuFillBrush}"
+                        HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE896;" FontSize="18" Foreground="{DynamicResource AccentBrush}" />
+                        <TextBlock x:Name="DropText" Text="Drop to copy here" Margin="12,0,0,0" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </Border>
+        </Border>
+    </Grid>
+
+</UserControl>

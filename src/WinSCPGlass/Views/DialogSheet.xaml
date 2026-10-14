@@ -1,0 +1,116 @@
+<UserControl x:Class="WinScpGlass.Views.DialogSheet"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="clr-namespace:WinScpGlass.Controls"
+             xmlns:vm="clr-namespace:WinScpGlass.ViewModels">
+    <StackPanel Margin="30,30,30,26" d:DataContext="{d:DesignInstance vm:DialogRequest}"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                mc:Ignorable="d">
+        <!-- Tone badge -->
+        <Grid Width="52" Height="52" HorizontalAlignment="Left">
+            <Border CornerRadius="17">
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Setter Property="Background" Value="{DynamicResource AccentGradientBrush}" />
+                        <Setter Property="Effect">
+                            <Setter.Value>
+                                <DropShadowEffect BlurRadius="22" ShadowDepth="4" Direction="270" Opacity="0.45" Color="#7A6BFF" />
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding Tone}" Value="Danger">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#FF7A8F" Offset="0" />
+                                            <GradientStop Color="#E8365A" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect BlurRadius="22" ShadowDepth="4" Direction="270" Opacity="0.45" Color="#E8365A" />
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Tone}" Value="Warning">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#FFD36B" Offset="0" />
+                                            <GradientStop Color="#F59E0B" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect BlurRadius="22" ShadowDepth="4" Direction="270" Opacity="0.45" Color="#F59E0B" />
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Tone}" Value="Success">
+                                <Setter Property="Background">
+                                    <Setter.Value>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#5EEAB0" Offset="0" />
+                                            <GradientStop Color="#10B981" Offset="1" />
+                                        </LinearGradientBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+            </Border>
+            <Border CornerRadius="17" Background="{DynamicResource AccentGlossBrush}" />
+            <TextBlock Style="{StaticResource Glyph}" Text="{Binding Glyph}" FontSize="22" Foreground="White" HorizontalAlignment="Center" />
+        </Grid>
+
+        <TextBlock Text="{Binding Title}" Margin="0,20,0,0" FontFamily="{StaticResource DisplayFont}" FontSize="21" FontWeight="SemiBold"
+                   Foreground="{DynamicResource TextPrimaryBrush}" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding Message}" Margin="0,8,0,0" Style="{StaticResource BodyText}" LineHeight="20"
+                   Visibility="{Binding Message, Converter={StaticResource ValueToVisible}}" />
+
+        <TextBox Text="{Binding Detail, Mode=OneWay}" IsReadOnly="True" Margin="0,16,0,0" Height="Auto" MaxHeight="160"
+                 Padding="0,11" FontFamily="{StaticResource MonoFont}" FontSize="12.5" TextWrapping="Wrap"
+                 VerticalScrollBarVisibility="Auto" Style="{StaticResource GlassTextBox}"
+                 Visibility="{Binding Detail, Converter={StaticResource ValueToVisible}}" />
+
+        <Grid Margin="0,18,0,0" Visibility="{Binding HasInput, Converter={StaticResource BoolToVisible}}">
+            <TextBox x:Name="InputText" Style="{StaticResource GlassTextBox}"
+                     Text="{Binding InputText, UpdateSourceTrigger=PropertyChanged}"
+                     ctl:UiProps.Placeholder="{Binding InputPlaceholder}"
+                     Visibility="{Binding IsPassword, Converter={StaticResource BoolToCollapsed}}" />
+            <PasswordBox x:Name="InputPassword" Style="{StaticResource GlassPasswordBox}"
+                         ctl:UiProps.BoundPassword="{Binding InputText, Mode=TwoWay}"
+                         ctl:UiProps.Placeholder="{Binding InputPlaceholder}" ctl:UiProps.Icon="&#xE72E;"
+                         Visibility="{Binding IsPassword, Converter={StaticResource BoolToVisible}}" />
+        </Grid>
+
+        <ItemsControl ItemsSource="{Binding Buttons}" Margin="0,26,0,0" HorizontalAlignment="Right" Focusable="False">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type vm:DialogButton}">
+                    <Button x:Name="Btn" Content="{Binding Text}" Margin="10,0,0,0" MinWidth="96"
+                            Style="{StaticResource GlassButton}"
+                            Command="{Binding DataContext.ChooseCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                            CommandParameter="{Binding}" />
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding IsPrimary}" Value="True">
+                            <Setter TargetName="Btn" Property="Style" Value="{StaticResource PrimaryButton}" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsDanger}" Value="True">
+                            <Setter TargetName="Btn" Property="Style" Value="{StaticResource DangerButton}" />
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+    </StackPanel>
+</UserControl>

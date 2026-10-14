@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>WinScpGlass</RootNamespace>
+    <AssemblyName>WinSCPGlass</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets/app.ico</ApplicationIcon>
+    <Product>WinSCP Glass</Product>
+    <Version>1.0.0</Version>
+    <Authors>Yadnesh Bhagwat</Authors>
+    <Copyright>Copyright © 2026 Yadnesh Bhagwat</Copyright>
+    <Description>A liquid-glass file transfer client for Windows, inspired by WinSCP.</Description>
+    <RepositoryUrl>https://github.com/byadnesh/WinSCP-Glass</RepositoryUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.13" />
+    <PackageReference Include="WinSCP" Version="6.7.0" />
+  </ItemGroup>
+
+</Project>

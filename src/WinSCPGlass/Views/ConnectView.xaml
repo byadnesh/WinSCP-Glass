@@ -1,0 +1,294 @@
+<UserControl x:Class="WinScpGlass.Views.ConnectView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ctl="clr-namespace:WinScpGlass.Controls"
+             xmlns:vm="clr-namespace:WinScpGlass.ViewModels"
+             xmlns:m="clr-namespace:WinScpGlass.Models"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance vm:ConnectViewModel}">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="310" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ============================================================ Sites sidebar -->
+        <ContentControl Style="{StaticResource GlassCard}" Padding="14">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <Grid Margin="8,6,2,14">
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Sites" Style="{StaticResource HeadingText}" FontSize="20" />
+                        <TextBlock Text="Your saved servers" Style="{StaticResource CaptionText}" Margin="0,2,0,0" />
+                    </StackPanel>
+                    <Button Style="{StaticResource IconButton}" HorizontalAlignment="Right" ctl:UiProps.Icon="&#xE710;"
+                            Command="{Binding NewSiteCommand}" ToolTip="New site" />
+                </Grid>
+
+                <TextBox Grid.Row="1" Style="{StaticResource GlassTextBox}" Height="38" ctl:UiProps.CornerRadius="19"
+                         ctl:UiProps.Icon="&#xE721;" ctl:UiProps.Placeholder="Search sites"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,12"
+                         Visibility="{Binding HasSites, Converter={StaticResource BoolToVisible}}" />
+
+                <ListBox x:Name="SitesList" Grid.Row="2" Style="{StaticResource GlassList}"
+                         ItemsSource="{Binding SitesView}" SelectedItem="{Binding SelectedSite}"
+                         MouseDoubleClick="SitesList_MouseDoubleClick">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate DataType="{x:Type m:SiteProfile}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <!-- Avatar orb -->
+                                <Grid Width="40" Height="40">
+                                    <Ellipse Fill="{Binding Hue, Converter={StaticResource HueToBrush}}" />
+                                    <Ellipse>
+                                        <Ellipse.Fill>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                                <GradientStop Color="#66FFFFFF" Offset="0" />
+                                                <GradientStop Color="#00FFFFFF" Offset="0.6" />
+                                            </LinearGradientBrush>
+                                        </Ellipse.Fill>
+                                    </Ellipse>
+                                    <TextBlock Text="{Binding Initials}" Foreground="White" FontWeight="SemiBold" FontSize="13.5"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Grid>
+                                <StackPanel Grid.Column="1" Margin="12,0,8,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" FontSize="14" TextTrimming="CharacterEllipsis" />
+                                    <TextBlock Text="{Binding Subtitle}" Style="{StaticResource CaptionText}" Margin="0,2,0,0" TextTrimming="CharacterEllipsis" />
+                                </StackPanel>
+                                <Border Grid.Column="2" CornerRadius="8" Padding="7,2" VerticalAlignment="Center"
+                                        Background="{DynamicResource FieldFillBrush}">
+                                    <TextBlock Text="{Binding ProtocolLabel}" FontSize="10.5" FontWeight="SemiBold"
+                                               Foreground="{DynamicResource TextSecondaryBrush}" />
+                                </Border>
+                            </Grid>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <!-- Empty state -->
+                <StackPanel Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16,0,16,60"
+                            Visibility="{Binding HasSites, Converter={StaticResource BoolToCollapsed}}">
+                    <Grid Width="64" Height="64">
+                        <Ellipse Fill="{DynamicResource GlassFillBrush}" Stroke="{DynamicResource GlassBorderBrush}" />
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE734;" FontSize="24" HorizontalAlignment="Center"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" />
+                    </Grid>
+                    <TextBlock Text="No saved sites yet" Margin="0,16,0,0" FontWeight="SemiBold" HorizontalAlignment="Center" />
+                    <TextBlock Text="Fill in the form and press Save to keep a server here." Style="{StaticResource CaptionText}"
+                               TextAlignment="Center" TextWrapping="Wrap" Margin="0,6,0,0" />
+                </StackPanel>
+            </Grid>
+        </ContentControl>
+
+        <!-- ============================================================ Connection form -->
+        <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Focusable="False">
+            <Grid MaxWidth="600" Margin="32,18,32,24" VerticalAlignment="Center">
+                <StackPanel>
+                    <!-- Hero -->
+                    <StackPanel Margin="6,0,0,26">
+                        <Grid Width="60" Height="60" HorizontalAlignment="Left">
+                            <Border CornerRadius="20" Background="{DynamicResource AccentGradientBrush}">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="34" ShadowDepth="6" Direction="270" Opacity="0.5" Color="#7A6BFF" />
+                                </Border.Effect>
+                            </Border>
+                            <Border CornerRadius="20" Background="{DynamicResource AccentGlossBrush}" />
+                            <Border CornerRadius="20" BorderThickness="1" BorderBrush="#66FFFFFF" />
+                            <TextBlock Style="{StaticResource Glyph}" Text="&#xE8AB;" FontSize="26" Foreground="White" HorizontalAlignment="Center" />
+                        </Grid>
+                        <TextBlock Text="{Binding FormTitle}" Style="{StaticResource TitleText}" Margin="0,20,0,0" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Text="Secure file transfer over SFTP, SCP, FTP, WebDAV and Amazon S3."
+                                   Style="{StaticResource BodyText}" Margin="0,6,0,0" />
+                    </StackPanel>
+
+                    <Grid>
+                        <ContentControl Style="{StaticResource GlassCard}" Padding="28,26,28,26" ctl:UiProps.CornerRadius="28">
+                            <StackPanel>
+                                <!-- Protocol -->
+                                <TextBlock Text="Protocol" Style="{StaticResource FieldLabel}" />
+                                <Border Style="{StaticResource SegmentTrack}">
+                                    <UniformGrid Rows="1">
+                                        <RadioButton Style="{StaticResource Segment}" Content="SFTP" GroupName="Protocol"
+                                                     IsChecked="{Binding Protocol, Converter={StaticResource EnumEquals}, ConverterParameter=Sftp}" />
+                                        <RadioButton Style="{StaticResource Segment}" Content="SCP" GroupName="Protocol"
+                                                     IsChecked="{Binding Protocol, Converter={StaticResource EnumEquals}, ConverterParameter=Scp}" />
+                                        <RadioButton Style="{StaticResource Segment}" Content="FTP" GroupName="Protocol"
+                                                     IsChecked="{Binding Protocol, Converter={StaticResource EnumEquals}, ConverterParameter=Ftp}" />
+                                        <RadioButton Style="{StaticResource Segment}" Content="WebDAV" GroupName="Protocol"
+                                                     IsChecked="{Binding Protocol, Converter={StaticResource EnumEquals}, ConverterParameter=WebDav}" />
+                                        <RadioButton Style="{StaticResource Segment}" Content="S3" GroupName="Protocol"
+                                                     IsChecked="{Binding Protocol, Converter={StaticResource EnumEquals}, ConverterParameter=S3}" />
+                                    </UniformGrid>
+                                </Border>
+
+                                <!-- Host + port -->
+                                <Grid Margin="0,20,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="14" />
+                                        <ColumnDefinition Width="112" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="Host" Style="{StaticResource FieldLabel}" />
+                                        <TextBox x:Name="HostBox" Style="{StaticResource GlassTextBox}" ctl:UiProps.Icon="&#xE774;"
+                                                 ctl:UiProps.Placeholder="{Binding HostPlaceholder}"
+                                                 Text="{Binding Host, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Port" Style="{StaticResource FieldLabel}" />
+                                        <TextBox Style="{StaticResource GlassTextBox}" ctl:UiProps.Placeholder="{Binding PortPlaceholder}"
+                                                 Text="{Binding PortText, UpdateSourceTrigger=PropertyChanged}" MaxLength="5" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Credentials -->
+                                <Grid Margin="0,16,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="14" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding UserLabel}" Style="{StaticResource FieldLabel}" />
+                                        <TextBox Style="{StaticResource GlassTextBox}" ctl:UiProps.Icon="&#xE77B;"
+                                                 ctl:UiProps.Placeholder="{Binding UserPlaceholder}"
+                                                 Text="{Binding User, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="{Binding PasswordLabel}" Style="{StaticResource FieldLabel}" />
+                                        <PasswordBox Style="{StaticResource GlassPasswordBox}" ctl:UiProps.Icon="&#xE72E;"
+                                                     ctl:UiProps.Placeholder="Optional — asked when connecting"
+                                                     ctl:UiProps.BoundPassword="{Binding Password, Mode=TwoWay}" />
+                                    </StackPanel>
+                                </Grid>
+
+                                <!-- Advanced -->
+                                <ToggleButton Style="{StaticResource DisclosureToggle}" Content="Advanced options" Margin="4,22,0,0"
+                                              HorizontalAlignment="Left" IsChecked="{Binding ShowAdvanced}" />
+
+                                <StackPanel Margin="0,16,0,0" Visibility="{Binding ShowAdvanced, Converter={StaticResource BoolToVisible}}">
+                                    <TextBlock Text="Site name" Style="{StaticResource FieldLabel}" />
+                                    <TextBox Style="{StaticResource GlassTextBox}" ctl:UiProps.Icon="&#xE8EC;"
+                                             ctl:UiProps.Placeholder="Shown in your sites list (defaults to the host)"
+                                             Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" />
+
+                                    <StackPanel Margin="0,16,0,0" Visibility="{Binding IsSsh, Converter={StaticResource BoolToVisible}}">
+                                        <TextBlock Text="Private key" Style="{StaticResource FieldLabel}" />
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <TextBox Style="{StaticResource GlassTextBox}" ctl:UiProps.Icon="&#xE8D7;"
+                                                     ctl:UiProps.Placeholder="Use a key file instead of a password (.ppk)"
+                                                     Text="{Binding PrivateKeyPath, UpdateSourceTrigger=PropertyChanged}" />
+                                            <Button Grid.Column="1" Style="{StaticResource GlassButton}" Content="Browse" Margin="10,0,0,0" Height="42"
+                                                    ctl:UiProps.CornerRadius="14" Command="{Binding BrowsePrivateKeyCommand}" />
+                                        </Grid>
+                                    </StackPanel>
+
+                                    <StackPanel Margin="0,16,0,0" Visibility="{Binding IsFtp, Converter={StaticResource BoolToVisible}}">
+                                        <TextBlock Text="Encryption" Style="{StaticResource FieldLabel}" />
+                                        <Border Style="{StaticResource SegmentTrack}">
+                                            <UniformGrid Rows="1">
+                                                <RadioButton Style="{StaticResource Segment}" Content="None" GroupName="Ftps"
+                                                             IsChecked="{Binding FtpEncryption, Converter={StaticResource EnumEquals}, ConverterParameter=None}" />
+                                                <RadioButton Style="{StaticResource Segment}" Content="Explicit TLS" GroupName="Ftps"
+                                                             IsChecked="{Binding FtpEncryption, Converter={StaticResource EnumEquals}, ConverterParameter=ExplicitTls}" />
+                                                <RadioButton Style="{StaticResource Segment}" Content="Implicit TLS" GroupName="Ftps"
+                                                             IsChecked="{Binding FtpEncryption, Converter={StaticResource EnumEquals}, ConverterParameter=ImplicitTls}" />
+                                            </UniformGrid>
+                                        </Border>
+                                        <CheckBox Style="{StaticResource GlassSwitch}" Content="Active mode (only if passive mode fails)"
+                                                  Margin="4,16,0,0" IsChecked="{Binding FtpActiveMode}" />
+                                    </StackPanel>
+
+                                    <CheckBox Style="{StaticResource GlassSwitch}" Content="Use HTTPS" Margin="4,18,0,0"
+                                              IsChecked="{Binding UseTls}"
+                                              Visibility="{Binding IsWebDav, Converter={StaticResource BoolToVisible}}" />
+                                    <CheckBox Style="{StaticResource GlassSwitch}" Margin="4,16,0,0" IsChecked="{Binding AcceptAnyTlsCertificate}"
+                                              Visibility="{Binding IsTls, Converter={StaticResource BoolToVisible}}">
+                                        <StackPanel>
+                                            <TextBlock Text="Accept any TLS certificate" />
+                                            <TextBlock Text="Only for servers with self-signed certificates you trust" Style="{StaticResource CaptionText}" Margin="0,2,0,0" />
+                                        </StackPanel>
+                                    </CheckBox>
+
+                                    <Grid Margin="0,16,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="14" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel>
+                                            <TextBlock Text="Remote start folder" Style="{StaticResource FieldLabel}" />
+                                            <TextBox Style="{StaticResource GlassTextBox}" ctl:UiProps.Icon="&#xE8B7;" ctl:UiProps.Placeholder="Home folder"
+                                                     Text="{Binding RemoteDirectory, UpdateSourceTrigger=PropertyChanged}" />
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="2">
+                                            <TextBlock Text="Local start folder" Style="{StaticResource FieldLabel}" />
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*" />
+                                                    <ColumnDefinition Width="Auto" />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBox Style="{StaticResource GlassTextBox}" ctl:UiProps.Icon="&#xE977;" ctl:UiProps.Placeholder="Last used"
+                                                         Text="{Binding LocalDirectory, UpdateSourceTrigger=PropertyChanged}" />
+                                                <Button Grid.Column="1" Style="{StaticResource IconButton}" Width="42" Height="42" Margin="8,0,0,0"
+                                                        ctl:UiProps.CornerRadius="14" ctl:UiProps.Icon="&#xE838;"
+                                                        Command="{Binding BrowseLocalDirectoryCommand}" ToolTip="Browse" />
+                                            </Grid>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <CheckBox Style="{StaticResource GlassSwitch}" Margin="4,18,0,0" IsChecked="{Binding SavePassword}">
+                                        <StackPanel>
+                                            <TextBlock Text="Remember password" />
+                                            <TextBlock Text="Encrypted with your Windows account" Style="{StaticResource CaptionText}" Margin="0,2,0,0" />
+                                        </StackPanel>
+                                    </CheckBox>
+                                </StackPanel>
+
+                                <!-- Actions -->
+                                <Border Style="{StaticResource Divider}" Margin="0,24,0,20" />
+                                <Grid>
+                                    <Button Style="{StaticResource GhostButton}" Content="Delete" ctl:UiProps.Icon="&#xE74D;" HorizontalAlignment="Left"
+                                            Foreground="{DynamicResource DangerBrush}" Command="{Binding DeleteSiteCommand}"
+                                            Visibility="{Binding IsSavedSite, Converter={StaticResource BoolToVisible}}" />
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Style="{StaticResource GlassButton}" Content="Save" ctl:UiProps.Icon="&#xE74E;"
+                                                Height="44" ctl:UiProps.CornerRadius="22" Padding="20,0" Command="{Binding SaveSiteCommand}" />
+                                        <Button Style="{StaticResource PrimaryButton}" Content="Connect" ctl:UiProps.Icon="&#xE768;"
+                                                Height="44" ctl:UiProps.CornerRadius="22" Padding="26,0" Margin="12,0,0,0"
+                                                IsDefault="True" Command="{Binding ConnectCommand}" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </ContentControl>
+
+                        <!-- Connecting veil -->
+                        <Grid Visibility="{Binding IsConnecting, Converter={StaticResource BoolToVisible}}">
+                            <Border CornerRadius="28" Background="{DynamicResource GlassFillStrongBrush}" Opacity="0.92" />
+                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Control Style="{StaticResource Spinner}" Width="40" Height="40" />
+                                <TextBlock Text="{Binding ConnectingText}" Style="{StaticResource HeadingText}" Margin="0,20,0,0" HorizontalAlignment="Center" />
+                                <Button Style="{StaticResource GlassButton}" Content="Cancel" Margin="0,18,0,0" HorizontalAlignment="Center"
+                                        Command="{Binding CancelConnectCommand}" />
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

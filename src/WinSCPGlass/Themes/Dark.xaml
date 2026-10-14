@@ -1,0 +1,71 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- Liquid glass, dark environment -->
+
+    <!-- Tint laid over the OS acrylic backdrop (also the fallback when acrylic is unavailable) -->
+    <LinearGradientBrush x:Key="WindowTintBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#D90B0E1C" Offset="0" />
+        <GradientStop Color="#D9120F24" Offset="0.55" />
+        <GradientStop Color="#D90A1420" Offset="1" />
+    </LinearGradientBrush>
+
+    <!-- Ambient light orbs drifting behind the glass -->
+    <Color x:Key="Orb1Color">#8A6CFF</Color>
+    <Color x:Key="Orb2Color">#22C3FF</Color>
+    <Color x:Key="Orb3Color">#FF5FA2</Color>
+    <Color x:Key="Orb4Color">#3BE8B0</Color>
+    <sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="OrbOpacity">0.55</sys:Double>
+
+    <!-- Glass surfaces -->
+    <SolidColorBrush x:Key="GlassFillBrush" Color="#14FFFFFF" />
+    <SolidColorBrush x:Key="GlassFillStrongBrush" Color="#E6181B2C" />
+    <SolidColorBrush x:Key="GlassFillSubtleBrush" Color="#0AFFFFFF" />
+    <LinearGradientBrush x:Key="GlassBorderBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#70FFFFFF" Offset="0" />
+        <GradientStop Color="#14FFFFFF" Offset="0.45" />
+        <GradientStop Color="#0AFFFFFF" Offset="0.7" />
+        <GradientStop Color="#38FFFFFF" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="GlassSheenBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#1CFFFFFF" Offset="0" />
+        <GradientStop Color="#00FFFFFF" Offset="0.35" />
+    </LinearGradientBrush>
+    <Color x:Key="GlassShadowColor">#000000</Color>
+    <sys:Double xmlns:sys="clr-namespace:System;assembly=mscorlib" x:Key="GlassShadowOpacity">0.45</sys:Double>
+
+    <!-- Interaction -->
+    <SolidColorBrush x:Key="HoverFillBrush" Color="#17FFFFFF" />
+    <SolidColorBrush x:Key="PressedFillBrush" Color="#0DFFFFFF" />
+    <SolidColorBrush x:Key="SelectedFillBrush" Color="#4D7C8CFF" />
+    <SolidColorBrush x:Key="SelectedBorderBrush" Color="#807C8CFF" />
+    <SolidColorBrush x:Key="FieldFillBrush" Color="#12FFFFFF" />
+    <SolidColorBrush x:Key="FieldBorderBrush" Color="#1FFFFFFF" />
+    <SolidColorBrush x:Key="DividerBrush" Color="#14FFFFFF" />
+    <SolidColorBrush x:Key="ScrimBrush" Color="#73000000" />
+    <SolidColorBrush x:Key="MenuFillBrush" Color="#F21A1D2E" />
+    <SolidColorBrush x:Key="ThumbBrush" Color="#40FFFFFF" />
+    <SolidColorBrush x:Key="SegmentOnBrush" Color="#2EFFFFFF" />
+
+    <!-- Text -->
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F4F6FF" />
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="#B3C3C9E6" />
+    <SolidColorBrush x:Key="TextTertiaryBrush" Color="#808C93B5" />
+    <SolidColorBrush x:Key="TextOnAccentBrush" Color="#FFFFFF" />
+
+    <!-- Accent -->
+    <Color x:Key="AccentColor">#7C8CFF</Color>
+    <SolidColorBrush x:Key="AccentBrush" Color="#8E9BFF" />
+    <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="1,1">
+        <GradientStop Color="#6F8DFF" Offset="0" />
+        <GradientStop Color="#A16BFF" Offset="1" />
+    </LinearGradientBrush>
+    <LinearGradientBrush x:Key="AccentGlossBrush" StartPoint="0,0" EndPoint="0,1">
+        <GradientStop Color="#55FFFFFF" Offset="0" />
+        <GradientStop Color="#00FFFFFF" Offset="0.55" />
+    </LinearGradientBrush>
+
+    <SolidColorBrush x:Key="DangerBrush" Color="#FF6B86" />
+    <SolidColorBrush x:Key="DangerFillBrush" Color="#33FF5C7A" />
+    <SolidColorBrush x:Key="SuccessBrush" Color="#4ADE9B" />
+    <SolidColorBrush x:Key="WarningBrush" Color="#FBC54A" />
+</ResourceDictionary>
