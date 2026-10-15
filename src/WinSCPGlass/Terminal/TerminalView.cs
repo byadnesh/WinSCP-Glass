@@ -9,27 +9,27 @@ using WinScpGlass.ViewModels;
 namespace WinScpGlass.Terminal;
 
 /// <summary>
-/// Renders a <see cref="TerminalEmulator"/> as a cyberpunk green-phosphor screen: every colour a program
-/// asks for is drawn as a shade of neon green, over the black screen provided by the surrounding view.
+/// Renders a <see cref="TerminalEmulator"/> as a cyberpunk screen: neon green text by default, and
+/// neon colours wherever a program asks for them, over the black screen provided by the surrounding view.
 /// </summary>
 public sealed class TerminalView : FrameworkElement
 {
-    // ---- cyberpunk phosphor: black screen, every colour drawn as a shade of neon green.
-    // Standard xterm colours only decide how bright each green is, so ls/git output stays readable.
-    private static readonly Color[] StandardPalette =
+    // ---- cyberpunk neon palette, tuned to glow on a black screen (index 2, green, is the phosphor default)
+    private static readonly Color[] NeonPalette =
     {
-        C("#000000"), C("#CD0000"), C("#00CD00"), C("#CDCD00"), C("#0000EE"), C("#CD00CD"), C("#00CDCD"), C("#E5E5E5"),
-        C("#7F7F7F"), C("#FF0000"), C("#00FF00"), C("#FFFF00"), C("#5C5CFF"), C("#FF00FF"), C("#00FFFF"), C("#FFFFFF"),
+        C("#3E4C5E"), C("#FF3B6B"), C("#39FF7F"), C("#FFE45C"), C("#4D9DFF"), C("#FF4FD8"), C("#00F0FF"), C("#D8E6F0"),
+        C("#6B7F94"), C("#FF6B8E"), C("#8CFFB5"), C("#FFF38A"), C("#7FBFFF"), C("#FF8AE6"), C("#7CFAFF"), C("#FFFFFF"),
     };
     private static readonly Color Phosphor = C("#39FF7F");
     private static readonly Color ScreenBlack = C("#000000");
 
-    /// <summary>Any colour → green of the same perceived brightness, never too dark to read on black.</summary>
-    private static Color ToGreen(Color c)
+    /// <summary>Lifts very dark 256-colour and true-colour values so they stay readable on black.</summary>
+    private static Color Readable(Color c)
     {
         double luma = (0.299 * c.R + 0.587 * c.G + 0.114 * c.B) / 255;
-        double level = 0.4 + luma * 0.6;
-        return Color.FromRgb((byte)(level * 110), (byte)(115 + level * 140), (byte)(60 + level * 95));
+        if (luma >= 0.3) return c;
+        const double mix = 0.45;
+        return Color.FromRgb((byte)(c.R + (255 - c.R) * mix), (byte)(c.G + (255 - c.G) * mix), (byte)(c.B + (255 - c.B) * mix));
     }
 
     private static Color C(string hex) => (Color)ColorConverter.ConvertFromString(hex);
@@ -144,13 +144,14 @@ public sealed class TerminalView : FrameworkElement
     private static Color Resolve(int color, bool foreground)
     {
         if (color == TermColor.Default) return foreground ? Foreground : Colors.Transparent;
-        return ToGreen(Standard(color));
+        if (color < 16) return NeonPalette[color];
+        var standard = Standard(color);
+        return foreground ? Readable(standard) : standard;
     }
 
     private static Color Standard(int color)
     {
         if (TermColor.IsRgb(color)) return Color.FromRgb((byte)(color >> 16), (byte)(color >> 8), (byte)color);
-        if (color < 16) return StandardPalette[color];
         if (color < 232)
         {
             int index = color - 16;

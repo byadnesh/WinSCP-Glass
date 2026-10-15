@@ -169,7 +169,7 @@
                     <Grid>
                         <term:TerminalView x:Name="TerminalView" Margin="2">
                             <term:TerminalView.Effect>
-                                <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#39FF7F" Opacity="0.55" />
+                                <DropShadowEffect BlurRadius="7" ShadowDepth="0" Color="#39FF7F" Opacity="0.3" />
                             </term:TerminalView.Effect>
                         </term:TerminalView>
                         <Rectangle IsHitTestVisible="False" RadiusX="15" RadiusY="15">

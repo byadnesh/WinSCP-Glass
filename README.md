@@ -7,7 +7,7 @@
 <br/><br/>
 
 <a href="https://github.com/byadnesh/WinSCP-Glass">
-  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=500&size=21&duration=3000&pause=1000&color=8E9BFF&center=true&vCenter=true&width=640&lines=SFTP+%C2%B7+SCP+%C2%B7+FTP%2FFTPS+%C2%B7+WebDAV+%C2%B7+Amazon+S3;Translucent+glass+interface+inspired+by+visionOS;Built-in+SSH+terminal+in+neon+green;Drag+and+drop+transfers+with+a+live+queue;Built+with+C%23%2C+WPF+and+.NET+9;Inspired+by+WinSCP" alt="Animated summary of WinSCP Glass" />
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=500&size=21&duration=3000&pause=1000&color=8E9BFF&center=true&vCenter=true&width=640&lines=SFTP+%C2%B7+SCP+%C2%B7+FTP%2FFTPS+%C2%B7+WebDAV+%C2%B7+Amazon+S3;Translucent+glass+interface+inspired+by+visionOS;Built-in+neon+SSH+terminal;Drag+and+drop+transfers+with+a+live+queue;Built+with+C%23%2C+WPF+and+.NET+9;Inspired+by+WinSCP" alt="Animated summary of WinSCP Glass" />
 </a>
 
 <br/><br/>
@@ -82,7 +82,7 @@ The application is written in C# with WPF on .NET 9 and follows an MVVM architec
 
 - Interactive SSH shell that signs in automatically with the same credentials as the SFTP or SCP session.
 - Verifies the server against the host key you already trusted, so there is no second prompt.
-- Cyberpunk green-phosphor display on a black screen, with a soft glow and CRT scanlines.
+- Cyberpunk display on a black screen: neon green text by default, with neon red, yellow, blue, magenta and cyan wherever programs use colour, plus a soft glow and CRT scanlines.
 - Full xterm emulation: colours, cursor addressing and full-screen programs such as `htop`, `nano`, `vim` and `less`.
 - Copy and paste, mouse selection, 5,000 lines of scrollback, and automatic resizing.
 - **Current folder** and **Open in terminal** jump the shell to the folder open in the server panel.
@@ -238,7 +238,7 @@ WinSCP-Glass/
 │   ├── Models/                Sites, settings and file entries
 │   ├── Services/              WinSCP connection service and shell integration
 │   ├── ViewModels/            Application logic
-│   ├── Terminal/              xterm emulator and the green-phosphor terminal renderer
+│   ├── Terminal/              xterm emulator and the neon terminal renderer
 │   ├── Views/                 Connection, session, file panel and dialog views
 │   └── Diagnostics/           Debug-only screenshot tooling
 ├── docs/                      Logo and screenshots
