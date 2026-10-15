@@ -371,6 +371,7 @@ public partial class FilePanelView : UserControl
         MenuDelete.IsEnabled = any;
         MenuNewFolder.IsEnabled = Vm.CanModifyHere;
         MenuCopyPath.IsEnabled = count > 0;
+        MenuTerminal.Visibility = Vm.IsRemote && Session.HasTerminal ? Visibility.Visible : Visibility.Collapsed;
     }
 
     private static void UiPropsSetIcon(DependencyObject target, string glyph) => Controls.UiProps.SetIcon(target, glyph);
@@ -386,6 +387,14 @@ public partial class FilePanelView : UserControl
     private void MenuNewFolder_Click(object sender, RoutedEventArgs e) => _vm?.Owner.NewFolderCommand.Execute(null);
     private void MenuDelete_Click(object sender, RoutedEventArgs e) => _vm?.Owner.DeleteCommand.Execute(null);
     private void MenuRefresh_Click(object sender, RoutedEventArgs e) => _vm?.RefreshCommand.Execute(null);
+
+    private void MenuTerminal_Click(object sender, RoutedEventArgs e)
+    {
+        if (_vm == null) return;
+        // A selected folder opens itself; otherwise the folder being shown.
+        var folder = Vm.Selected.Count == 1 && Vm.Selected[0].IsDirectory ? Vm.Selected[0].FullPath : Vm.CurrentPath;
+        Session.OpenInTerminal(folder);
+    }
 
     private void MenuCopyPath_Click(object sender, RoutedEventArgs e)
     {

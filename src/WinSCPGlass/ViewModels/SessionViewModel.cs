@@ -20,9 +20,16 @@ public sealed partial class SessionViewModel : ObservableObject, IDisposable
     public LocalPanelViewModel Local { get; }
     public RemotePanelViewModel Remote { get; }
     public TransferQueueViewModel Queue { get; }
+    /// <summary>Interactive shell on the same server; null for FTP, WebDAV and S3.</summary>
+    public TerminalViewModel? Terminal { get; }
+    public bool HasTerminal => Terminal != null;
+
+    /// <summary>Asks the view to put the keyboard focus in the terminal.</summary>
+    public event Action? TerminalFocusRequested;
 
     [ObservableProperty] private FilePanelViewModel _activePanel;
     [ObservableProperty] private bool _isReconnecting;
+    [ObservableProperty] private bool _isTerminalVisible;
 
     public SiteProfile Site => Connection.Site;
     public string ChipText => $"{Site.Subtitle}";
@@ -50,7 +57,49 @@ public sealed partial class SessionViewModel : ObservableObject, IDisposable
         Queue = new TransferQueueViewModel(this);
         _activePanel = Remote;
         Remote.IsActive = true;
+
+        if (connection.TerminalOptions != null)
+        {
+            Terminal = new TerminalViewModel(() => connection.TerminalOptions!, Site.Subtitle);
+            _isTerminalVisible = main.Settings.ShowTerminal;
+        }
     }
+
+    public double TerminalHeight
+    {
+        get => _main.Settings.TerminalHeight;
+        set
+        {
+            _main.Settings.TerminalHeight = Math.Max(140, value);
+            _main.SaveSettings();
+        }
+    }
+
+    partial void OnIsTerminalVisibleChanged(bool value)
+    {
+        _main.Settings.ShowTerminal = value;
+        _main.SaveSettings();
+        if (value && Terminal is { State: TerminalState.Idle }) _ = Terminal.ConnectAsync();
+        if (value) TerminalFocusRequested?.Invoke();
+    }
+
+    [RelayCommand]
+    private void ToggleTerminal()
+    {
+        if (HasTerminal) IsTerminalVisible = !IsTerminalVisible;
+    }
+
+    /// <summary>Opens the terminal and changes its directory to a remote folder.</summary>
+    public void OpenInTerminal(string remoteDirectory)
+    {
+        if (Terminal == null) return;
+        IsTerminalVisible = true;
+        if (Terminal.IsConnected) Terminal.ChangeDirectory(remoteDirectory);
+        TerminalFocusRequested?.Invoke();
+    }
+
+    [RelayCommand]
+    private void TerminalGoToFolder() => OpenInTerminal(Remote.CurrentPath);
 
     public async Task InitializeAsync()
     {
@@ -58,6 +107,8 @@ public sealed partial class SessionViewModel : ObservableObject, IDisposable
         if (!Directory.Exists(local)) local = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         await Local.NavigateAsync(local);
         await Remote.NavigateAsync(Site.RemoteDirectory ?? Connection.HomePath);
+        // The terminal logs in alongside the file session, using the same details.
+        if (Terminal != null && IsTerminalVisible) _ = Terminal.ConnectAsync();
     }
 
     partial void OnActivePanelChanged(FilePanelViewModel? oldValue, FilePanelViewModel newValue)
@@ -382,6 +433,7 @@ public sealed partial class SessionViewModel : ObservableObject, IDisposable
         foreach (var edit in _edits) edit.Dispose();
         _edits.Clear();
         foreach (var timer in _refreshTimers.Values) timer.Stop();
+        Terminal?.Dispose();
         Connection.Abort();
         Connection.Dispose();
     }

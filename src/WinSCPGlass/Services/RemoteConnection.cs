@@ -21,6 +21,12 @@ public sealed class RemoteConnection : IDisposable
     public SiteProfile Site { get; }
     public string HomePath { get; private set; } = "/";
 
+    /// <summary>Login for the built-in terminal: same server, credentials and trusted host key as this session.</summary>
+    public SshTerminalOptions? TerminalOptions => Site.IsSsh
+        ? new SshTerminalOptions(_options.HostName, _options.PortNumber, _options.UserName ?? "",
+            _options.Password, _options.SshPrivateKeyPath, _options.PrivateKeyPassphrase, _options.SshHostKeyFingerprint)
+        : null;
+
     private RemoteConnection(SiteProfile site, SessionOptions options)
     {
         Site = site;

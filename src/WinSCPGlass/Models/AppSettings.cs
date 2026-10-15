@@ -10,6 +10,8 @@ public sealed class AppSettings
 {
     public bool DarkTheme { get; set; } = true;
     public bool ShowHiddenFiles { get; set; }
+    public bool ShowTerminal { get; set; } = true;
+    public double TerminalHeight { get; set; } = 280;
     public string? LastLocalDirectory { get; set; }
     public List<SiteProfile> Sites { get; set; } = new();
     /// <summary>"host:port" → trusted SSH host key fingerprint (trust on first use).</summary>

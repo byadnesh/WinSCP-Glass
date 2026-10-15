@@ -170,6 +170,51 @@ internal static class SnapshotRunner
                     SaveLogo(Path.Combine(folder, $"logo-{px}.png"), px);
                 }
                 break;
+            case "term":
+                // Type a command into the built-in terminal (debug checks only)
+                shell.Session?.Terminal?.Send(arg + "\r");
+                await Task.Delay(1500);
+                break;
+            case "until-terminal":
+                for (int i = 0; i < 200 && shell.Session?.Terminal is { IsConnected: false, CanReconnect: false }; i++) await Task.Delay(100);
+                await Task.Delay(1500);
+                break;
+            case "term-demo":
+                if (shell.Session?.Terminal is { } t)
+                {
+                    string E = (char)27 + "[";
+                    string NL = "" + (char)13 + (char)10;
+                    string prompt = $"{E}1;32mdeploy@web-01{E}0m:{E}1;34m~/apps/shop{E}0m$ ";
+                    var lines = new List<string>
+                    {
+                        prompt + "ls --color",
+                        $"{E}1;34massets{E}0m  {E}1;34mconfig{E}0m  {E}1;32mdeploy.sh{E}0m  package.json  {E}1;31mrelease.tar.gz{E}0m  {E}1;36mcurrent{E}0m -> {E}1;34mreleases/42{E}0m",
+                        prompt + "git status -sb",
+                        $"## {E}32mmain{E}0m...{E}31morigin/main{E}0m [ahead {E}32m2{E}0m]",
+                        $" {E}32mM{E}0m src/checkout.ts",
+                        $" {E}31mD{E}0m legacy/cart.js",
+                        $"{E}31m??{E}0m notes/todo.md",
+                        prompt + "systemctl status nginx",
+                        $"{E}1;32m*{E}0m nginx.service - A high performance web server",
+                        $"     Active: {E}1;32mactive (running){E}0m since Wed 2026-10-14 09:12:44 UTC",
+                        $"   {E}2mMemory: 18.4M  CPU: 1.204s{E}0m   {E}33mwarning:{E}0m 2 workers restarted   {E}4;36mhttps://shop.example.com{E}0m",
+                        string.Concat(Enumerable.Range(0, 48).Select(i => $"{E}38;2;{(int)(111 + i * 3)};{(int)(141 - i)};{255}m=")) + $"{E}0m  "
+                            + string.Concat(Enumerable.Range(0, 16).Select(i => $"{E}38;5;{i}m#")) + $"{E}0m",
+                        prompt,
+                    };
+                    t.Emulator.Feed(E + "2J" + E + "H" + string.Join(NL, lines));
+                    t.Resize(t.Emulator.Columns, t.Emulator.Rows);
+                }
+                await Task.Delay(500);
+                break;
+            case "focus-terminal":
+                window.Activate();
+                var view = FindAll<WinScpGlass.Terminal.TerminalView>(window).FirstOrDefault();
+                view?.Focus();
+                System.Windows.Input.Keyboard.Focus(view);
+                await Task.Delay(300);
+                File.WriteAllText(Path.Combine(folder, "ready.txt"), "ready");
+                break;
             case "shot":
                 Capture(window, Path.Combine(folder, arg));
                 break;

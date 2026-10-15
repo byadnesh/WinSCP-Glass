@@ -160,6 +160,7 @@
                             <MenuItem x:Name="MenuRename" Header="Rename" ctl:UiProps.Icon="&#xE8AC;" InputGestureText="F2" Click="MenuRename_Click" />
                             <MenuItem x:Name="MenuNewFolder" Header="New folder" ctl:UiProps.Icon="&#xE8F4;" InputGestureText="Ctrl+Shift+N" Click="MenuNewFolder_Click" />
                             <MenuItem x:Name="MenuCopyPath" Header="Copy path" ctl:UiProps.Icon="&#xE8C8;" Click="MenuCopyPath_Click" />
+                            <MenuItem x:Name="MenuTerminal" Header="Open in terminal" ctl:UiProps.Icon="&#xE756;" Click="MenuTerminal_Click" />
                             <Separator />
                             <MenuItem Header="Refresh" ctl:UiProps.Icon="&#xE72C;" InputGestureText="F5" Click="MenuRefresh_Click" />
                             <MenuItem x:Name="MenuDelete" Header="Delete" ctl:UiProps.Icon="&#xE74D;" InputGestureText="Del"

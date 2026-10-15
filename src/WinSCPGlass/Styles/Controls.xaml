@@ -249,6 +249,16 @@
         <Setter Property="ctl:UiProps.CornerRadius" Value="12" />
     </Style>
 
+    <!-- Ghost button that stays lit while checked (e.g. the Terminal toggle) -->
+    <Style x:Key="GhostToggle" TargetType="ToggleButton" BasedOn="{StaticResource GhostButton}">
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Background" Value="{DynamicResource SelectedFillBrush}" />
+                <Setter Property="BorderBrush" Value="{DynamicResource SelectedBorderBrush}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="IconButton" TargetType="ButtonBase" BasedOn="{StaticResource GlassButton}">
         <Setter Property="Width" Value="36" />
         <Setter Property="Height" Value="36" />

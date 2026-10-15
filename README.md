@@ -7,7 +7,7 @@
 <br/><br/>
 
 <a href="https://github.com/byadnesh/WinSCP-Glass">
-  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=500&size=21&duration=3000&pause=1000&color=8E9BFF&center=true&vCenter=true&width=640&lines=SFTP+%C2%B7+SCP+%C2%B7+FTP%2FFTPS+%C2%B7+WebDAV+%C2%B7+Amazon+S3;Translucent+glass+interface+inspired+by+visionOS;Drag+and+drop+transfers+with+a+live+queue;Built+with+C%23%2C+WPF+and+.NET+9;Inspired+by+WinSCP" alt="Animated summary of WinSCP Glass" />
+  <img src="https://readme-typing-svg.demolab.com?font=Inter&weight=500&size=21&duration=3000&pause=1000&color=8E9BFF&center=true&vCenter=true&width=640&lines=SFTP+%C2%B7+SCP+%C2%B7+FTP%2FFTPS+%C2%B7+WebDAV+%C2%B7+Amazon+S3;Translucent+glass+interface+inspired+by+visionOS;Built-in+SSH+terminal+in+neon+green;Drag+and+drop+transfers+with+a+live+queue;Built+with+C%23%2C+WPF+and+.NET+9;Inspired+by+WinSCP" alt="Animated summary of WinSCP Glass" />
 </a>
 
 <br/><br/>
@@ -48,7 +48,7 @@
 
 WinSCP Glass is a modern desktop file transfer client for Windows. It reimagines the classic WinSCP experience with a translucent, liquid-glass interface inspired by visionOS.
 
-It connects to servers over SFTP, SCP, FTP/FTPS, WebDAV and Amazon S3, and shows local and remote files side by side in a two-panel workspace. Files move by drag and drop or a single keystroke. A live transfer queue reports progress and speed for every file, and lets you cancel or retry. Remote files can be edited in place: they open in their default application and upload again every time you save. Security is built in. SSH host keys are verified on first use, and saved credentials are encrypted with Windows DPAPI.
+It connects to servers over SFTP, SCP, FTP/FTPS, WebDAV and Amazon S3, and shows local and remote files side by side in a two-panel workspace. Files move by drag and drop or a single keystroke. A live transfer queue reports progress and speed for every file, and lets you cancel or retry. Remote files can be edited in place: they open in their default application and upload again every time you save. For SSH servers, a built-in terminal opens an interactive shell with the same login, so you can run commands without leaving the app. Security is built in. SSH host keys are verified on first use, and saved credentials are encrypted with Windows DPAPI.
 
 The application is written in C# with WPF on .NET 9 and follows an MVVM architecture. A custom glass design system sits on top of an asynchronous service layer that wraps the official WinSCP .NET engine. Protocol handling therefore comes from the same proven code WinSCP itself uses, presented through an interface designed to be fast, calm and easy to use.
 
@@ -77,6 +77,15 @@ The application is written in C# with WPF on .NET 9 and follows an MVVM architec
 - Instant filtering, natural sorting with folders first, and back, forward and up navigation.
 - Drag and drop between panels, or from Windows Explorer onto the server.
 - Native Windows file-type icons throughout.
+
+**Built-in terminal**
+
+- Interactive SSH shell that signs in automatically with the same credentials as the SFTP or SCP session.
+- Verifies the server against the host key you already trusted, so there is no second prompt.
+- Cyberpunk green-phosphor display on a black screen, with a soft glow and CRT scanlines.
+- Full xterm emulation: colours, cursor addressing and full-screen programs such as `htop`, `nano`, `vim` and `less`.
+- Copy and paste, mouse selection, 5,000 lines of scrollback, and automatic resizing.
+- **Current folder** and **Open in terminal** jump the shell to the folder open in the server panel.
 
 **Transfers**
 
@@ -109,6 +118,12 @@ The application is written in C# with WPF on .NET 9 and follows an MVVM architec
   <tr>
     <td align="center"><sub>File browser, light theme</sub></td>
     <td align="center"><sub>Transfer queue</sub></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="docs/screenshots/terminal.png" alt="Built-in SSH terminal" /></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><sub>Built-in SSH terminal</sub></td>
   </tr>
   <tr>
     <td width="50%"><img src="docs/screenshots/trust-dialog.png" alt="Host key verification" /></td>
@@ -178,6 +193,8 @@ Settings are stored in `%AppData%\WinSCP Glass\settings.json`. To store them els
 | <kbd>Ctrl</kbd>+<kbd>F</kbd> | Filter the current folder |
 | <kbd>Ctrl</kbd>+<kbd>L</kbd> | Enter a path |
 | <kbd>Tab</kbd> | Switch between panels |
+| <kbd>Ctrl</kbd>+<kbd>`</kbd> | Show or hide the terminal |
+| <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd>, <kbd>Ctrl</kbd>+<kbd>V</kbd> | Copy and paste in the terminal |
 
 ## Architecture
 
@@ -192,6 +209,8 @@ flowchart LR
     ENG --> B["FTP / FTPS"]
     ENG --> C["WebDAV"]
     ENG --> D["Amazon S3"]
+    UI --> TERM["Terminal<br/>xterm emulator"]
+    TERM --> SSH["SSH.NET shell"]
 ```
 
 <p align="center">
@@ -204,6 +223,7 @@ flowchart LR
 | Application | MVVM with CommunityToolkit.Mvvm |
 | Platform | DWM interop for the acrylic backdrop, Windows Shell for icons and the Recycle Bin, DPAPI for credentials |
 | Transfer engine | WinSCP .NET assembly and `WinSCP.exe` |
+| Terminal | SSH.NET interactive shell with a custom xterm-compatible emulator and renderer |
 
 ### Project structure
 
@@ -218,6 +238,7 @@ WinSCP-Glass/
 │   ├── Models/                Sites, settings and file entries
 │   ├── Services/              WinSCP connection service and shell integration
 │   ├── ViewModels/            Application logic
+│   ├── Terminal/              xterm emulator and the green-phosphor terminal renderer
 │   ├── Views/                 Connection, session, file panel and dialog views
 │   └── Diagnostics/           Debug-only screenshot tooling
 ├── docs/                      Logo and screenshots
@@ -231,6 +252,7 @@ WinSCP-Glass/
 - [x] Two-panel browser with drag and drop
 - [x] Transfer queue with cancel and retry
 - [x] In-place remote editing
+- [x] Built-in SSH terminal
 - [ ] Directory synchronization
 - [ ] Permissions editor
 - [ ] Tabbed sessions
@@ -251,6 +273,7 @@ WinSCP Glass is an independent project. It is not affiliated with, or endorsed b
 | [WinSCP .NET assembly](https://winscp.net/eng/docs/library) | MPL-2.0 |
 | WinSCP executable (included in the NuGet package) | GPL-3.0 |
 | [CommunityToolkit.Mvvm](https://github.com/CommunityToolkit/dotnet) | MIT |
+| [SSH.NET](https://github.com/sshnet/SSH.NET) | MIT |
 
 ## License
 

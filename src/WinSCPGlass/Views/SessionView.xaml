@@ -6,11 +6,15 @@
              xmlns:ctl="clr-namespace:WinScpGlass.Controls"
              xmlns:vm="clr-namespace:WinScpGlass.ViewModels"
              xmlns:views="clr-namespace:WinScpGlass.Views"
-             mc:Ignorable="d" d:DataContext="{d:DesignInstance vm:SessionViewModel}">
+             xmlns:term="clr-namespace:WinScpGlass.Terminal"
+             mc:Ignorable="d" d:DataContext="{d:DesignInstance vm:SessionViewModel}"
+             PreviewKeyDown="Session_PreviewKeyDown">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
+            <RowDefinition Height="*" MinHeight="220" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition x:Name="TerminalRow" Height="0" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
@@ -32,6 +36,10 @@
                     <Border Style="{StaticResource VDivider}" />
                     <Button Style="{StaticResource GhostIconButton}" Width="34" Height="34" ctl:UiProps.CornerRadius="17" ctl:UiProps.Icon="&#xE72C;"
                             Command="{Binding RefreshCommand}" ToolTip="Refresh (F5)" />
+                    <Border Style="{StaticResource VDivider}" Visibility="{Binding HasTerminal, Converter={StaticResource BoolToVisible}}" />
+                    <ToggleButton Style="{StaticResource GhostToggle}" Content="Terminal" ctl:UiProps.Icon="&#xE756;" ctl:UiProps.CornerRadius="17"
+                                  IsChecked="{Binding IsTerminalVisible}" ToolTip="Show or hide the terminal (Ctrl+`)"
+                                  Visibility="{Binding HasTerminal, Converter={StaticResource BoolToVisible}}" />
                 </StackPanel>
             </Border>
 
@@ -74,8 +82,124 @@
             </Grid>
         </Grid>
 
+        <!-- ============================================================ Terminal -->
+        <GridSplitter x:Name="TerminalSplitter" Grid.Row="2" Height="14" HorizontalAlignment="Stretch" VerticalAlignment="Center"
+                      ResizeDirection="Rows" ResizeBehavior="PreviousAndNext" Background="Transparent" Focusable="False"
+                      Cursor="SizeNS" DragCompleted="TerminalSplitter_DragCompleted"
+                      Visibility="{Binding IsTerminalVisible, Converter={StaticResource BoolToVisible}}">
+            <GridSplitter.Template>
+                <ControlTemplate TargetType="GridSplitter">
+                    <Grid Background="Transparent">
+                        <Border x:Name="Grip" Width="44" Height="4" CornerRadius="2" Background="{DynamicResource ThumbBrush}" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="Grip" Property="Background" Value="{DynamicResource AccentBrush}" />
+                            <Setter TargetName="Grip" Property="Width" Value="64" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </GridSplitter.Template>
+        </GridSplitter>
+
+        <ContentControl x:Name="TerminalCard" Grid.Row="3" Style="{StaticResource GlassCard}" Padding="16,12,12,12"
+                        DataContext="{Binding Terminal}"
+                        Visibility="{Binding DataContext.IsTerminalVisible, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisible}}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid Width="30" Height="30">
+                        <Ellipse Fill="{DynamicResource AccentGradientBrush}" />
+                        <Ellipse Fill="{DynamicResource AccentGlossBrush}" />
+                        <TextBlock Style="{StaticResource Glyph}" Text="&#xE756;" FontSize="13" Foreground="White" HorizontalAlignment="Center" />
+                    </Grid>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="12,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="Terminal" Style="{StaticResource HeadingText}" FontSize="15" />
+                        <Border Style="{StaticResource ChipBorder}" Padding="10,3" Margin="12,0,0,0" CornerRadius="11" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <Ellipse Width="7" Height="7" VerticalAlignment="Center">
+                                    <Ellipse.Style>
+                                        <Style TargetType="Ellipse">
+                                            <Setter Property="Fill" Value="{DynamicResource TextTertiaryBrush}" />
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding State}" Value="Connected">
+                                                    <Setter Property="Fill" Value="{DynamicResource SuccessBrush}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding State}" Value="Connecting">
+                                                    <Setter Property="Fill" Value="{DynamicResource WarningBrush}" />
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding State}" Value="Failed">
+                                                    <Setter Property="Fill" Value="{DynamicResource DangerBrush}" />
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Ellipse.Style>
+                                </Ellipse>
+                                <TextBlock Text="{Binding StatusText}" FontSize="12" Margin="8,0,0,0" MaxWidth="420" TextTrimming="CharacterEllipsis"
+                                           Foreground="{DynamicResource TextSecondaryBrush}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                        <Button Style="{StaticResource GhostButton}" Content="Current folder" ctl:UiProps.Icon="&#xE8B7;"
+                                Command="{Binding DataContext.TerminalGoToFolderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                IsEnabled="{Binding IsConnected}" ToolTip="cd into the folder open in the server panel" />
+                        <Button Style="{StaticResource GhostButton}" Content="Reconnect" ctl:UiProps.Icon="&#xE72C;"
+                                Command="{Binding ReconnectCommand}" Visibility="{Binding CanReconnect, Converter={StaticResource BoolToVisible}}" />
+                        <Button Style="{StaticResource GhostIconButton}" ctl:UiProps.Icon="&#xE75C;" ToolTip="Clear" Command="{Binding ClearCommand}" />
+                        <Button Style="{StaticResource GhostIconButton}" ctl:UiProps.Icon="&#xE70D;" ToolTip="Hide terminal (Ctrl+`)"
+                                Command="{Binding DataContext.ToggleTerminalCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                    </StackPanel>
+                </Grid>
+
+                <!-- Cyberpunk screen: pure black, neon green phosphor, faint CRT scanlines -->
+                <Border Grid.Row="1" Margin="0,10,0,0" CornerRadius="16" Background="#000000"
+                        BorderBrush="#5539FF7F" BorderThickness="1" ClipToBounds="True">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="22" ShadowDepth="0" Color="#39FF7F" Opacity="0.22" />
+                    </Border.Effect>
+                    <Grid>
+                        <term:TerminalView x:Name="TerminalView" Margin="2">
+                            <term:TerminalView.Effect>
+                                <DropShadowEffect BlurRadius="8" ShadowDepth="0" Color="#39FF7F" Opacity="0.55" />
+                            </term:TerminalView.Effect>
+                        </term:TerminalView>
+                        <Rectangle IsHitTestVisible="False" RadiusX="15" RadiusY="15">
+                            <Rectangle.Fill>
+                                <DrawingBrush TileMode="Tile" Viewport="0,0,4,3" ViewportUnits="Absolute" Viewbox="0,0,4,3" ViewboxUnits="Absolute">
+                                    <DrawingBrush.Drawing>
+                                        <GeometryDrawing Brush="#1F000000">
+                                            <GeometryDrawing.Geometry>
+                                                <RectangleGeometry Rect="0,2,4,1" />
+                                            </GeometryDrawing.Geometry>
+                                        </GeometryDrawing>
+                                    </DrawingBrush.Drawing>
+                                </DrawingBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                        <Rectangle IsHitTestVisible="False" RadiusX="15" RadiusY="15">
+                            <Rectangle.Fill>
+                                <RadialGradientBrush RadiusX="0.75" RadiusY="0.85">
+                                    <GradientStop Color="#00000000" Offset="0.6" />
+                                    <GradientStop Color="#66000000" Offset="1" />
+                                </RadialGradientBrush>
+                            </Rectangle.Fill>
+                        </Rectangle>
+                    </Grid>
+                </Border>
+            </Grid>
+        </ContentControl>
+
         <!-- ============================================================ Transfers -->
-        <ContentControl Grid.Row="2" Style="{StaticResource GlassCard}" Margin="0,14,0,0" Padding="16,12,12,10"
+        <ContentControl Grid.Row="4" Style="{StaticResource GlassCard}" Margin="0,14,0,0" Padding="16,12,12,10"
                         DataContext="{Binding Queue}"
                         Visibility="{Binding HasJobs, Converter={StaticResource BoolToVisible}}">
             <StackPanel>
